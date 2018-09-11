@@ -24,7 +24,7 @@ impl Executor {
         Executor { registry: registry }
     }
     pub fn plan(&self, input: String, fmt: String) -> ExecutionPlan {
-        let mapped: Vec<(PathBuf, PathBuf)> = WalkDir::new(input)
+        let mut mapped: Vec<(PathBuf, PathBuf)> = WalkDir::new(input)
             .into_iter()
             .filter(|entry| entry.is_ok())
             .map(|entry| entry.unwrap())
@@ -38,8 +38,9 @@ impl Executor {
             .map(|(ent, res)| (ent, res.unwrap()))
             .map(|(ent, s)| (ent, path::Path::new(&s).to_owned()))
             .collect();
+        mapped.sort_by(|(a,_),(b, _)| a.cmp(b));
 
-        let missing_dirs: Vec<path::PathBuf> = mapped
+        let mut missing_dirs: Vec<path::PathBuf> = mapped
             .iter()
             .filter(|(_, p)| p.parent().is_some())
             .map(|(_, p)| {
@@ -49,6 +50,7 @@ impl Executor {
             .filter(|p| !p.exists())
             .map(|p| path::PathBuf::from(p))
             .collect();
+        missing_dirs.sort_by(|a,b| a.cmp(b));
 
         return ExecutionPlan {
             dirs_to_create: missing_dirs,
