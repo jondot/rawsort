@@ -1,0 +1,19 @@
+[features]
+
+[package]
+name = "rawsort"
+version = "0.1.0"
+authors = ["Dotan Nahum <jondotan@gmail.com>"]
+
+
+[dependencies]
+walkdir = "2.1.4"
+chrono = "0.4"
+clap = "2"
+itertools = "0.7.3"
+dialoguer = "0.1.0"
+kamadak-exif = "*"
+notify = "4.0.0"
+
+
+
