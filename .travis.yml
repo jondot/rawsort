@@ -25,9 +25,6 @@ matrix:
     - env: TARGET=x86_64-apple-darwin
       os: osx
 
-    # Windows
-    - env: TARGET=x86_64-pc-windows-gnu
-
     # Bare metal
     # These targets don't support std and as such are likely not suitable for
     # most crates.
