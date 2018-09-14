@@ -4,6 +4,14 @@ extern crate itertools;
 extern crate notify;
 extern crate rawsort;
 extern crate walkdir;
+
+#[macro_use]
+extern crate slog;
+extern crate slog_json;
+extern crate slog_term;
+use slog::Drain;
+use std::sync::Mutex;
+
 use chrono::prelude::*;
 use itertools::Itertools;
 extern crate chrono;
@@ -76,8 +84,8 @@ fn main() {
         },
     );
 
-    let matches = App::new("Sorter")
-        .version("1.0")
+    let matches = App::new("rawsort")
+        .version(env!("CARGO_PKG_VERSION"))
         .author("Dotan N. <jondotan@gmail.com>")
         .about("Sort RAW and other standard photo formats.")
         .arg(
@@ -92,48 +100,45 @@ fn main() {
                         .iter()
                         .map(|(k, d)| format!("\t{}\t{}\n", k, d))
                         .join("")
-                ))
-                .takes_value(true),
-        )
-        .arg(
+                )).takes_value(true),
+        ).arg(
             Arg::with_name("INPUT")
                 .help("Sets the input folder to use.")
                 .required(true)
                 .index(1),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("force")
                 .short("f")
                 .long("force")
                 .help("Force file overwrites."),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("dryrun")
                 .short("d")
                 .long("dryrun")
                 .help("Dry run (shows a report of whats going to happen)."),
-        )
-        .arg(
+        ).arg(
+            Arg::with_name("json")
+                .short("")
+                .long("json")
+                .help("Log using JSON (for integration with other tools)."),
+        ).arg(
             Arg::with_name("watch")
                 .short("w")
                 .long("watch")
                 .value_name("WATCH_DIR")
                 .takes_value(true)
                 .help("Watch input directory and run if files are added."),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("yes")
                 .short("y")
                 .long("yes")
                 .help("Answer automatice 'yes' to all prompts."),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("v")
                 .short("v")
                 .multiple(true)
                 .help("Sets the level of verbosity."),
-        )
-        .get_matches();
+        ).get_matches();
 
     let fmt = matches
         .value_of("out")
@@ -146,23 +151,38 @@ fn main() {
     let watch_dir = matches.value_of("watch").unwrap_or(input);
     let exec = Executor::new(reg);
 
+    let plain = slog_term::PlainSyncDecorator::new(std::io::stdout());
+    let console = slog::Logger::root(slog_term::FullFormat::new(plain).build().fuse(), o!());
+
+    let structured = slog::Logger::root(
+        Mutex::new(slog_json::Json::default(std::io::stderr())).map(slog::Fuse),
+        o!("version" => env!("CARGO_PKG_VERSION")),
+    );
+
+    let log = if matches.is_present("json") {
+        structured
+    } else {
+        console
+    };
+    info!(log, "testing 123");
+
     let run = || {
         let plan = exec.plan(input.to_string(), fmt.to_string());
         let res = exec.validate(&plan);
         match res {
             Err(s) => {
-                println!("Execution is not valid, aborting. Did you check your formatting rules?");
-                println!("Error: {}", s);
-                return
+                error!(log, "Execution is not valid, aborting. Did you check your formatting rules?"; "error" => s);
+                return;
             }
-            Ok(_)=>{}
+            Ok(_) => {}
         }
         if dryrun {
-            plan.moves
+            plan.moves.iter().for_each(
+                |(from, to)| info!(log, "move"; "from"=>from.to_str(), "to"=>to.to_str()),
+            );
+            plan.dirs_to_create
                 .iter()
-                .for_each(|(from, to)| println!("{:?} -> {:?}", from, to));
-            println!("Directories to be created:");
-            plan.dirs_to_create.iter().for_each(|d| println!("{:?}", d));
+                .for_each(|d| info!(log, "create directory"; "directory"=> d.to_str()));
         } else {
             exec.execute(
                 &plan,
@@ -176,9 +196,9 @@ fn main() {
     run();
 
     if watch_mode {
-        println!("Now watching '{}'...", watch_dir);
+        info!(log, "Watching"; "directory"=>watch_dir);
         if let Err(e) = watch(watch_dir, run) {
-            println!("watch error: {:?}", e)
+            error!(log, "watch error"; "error" => e.to_string())
         }
     }
 }

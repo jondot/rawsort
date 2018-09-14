@@ -38,7 +38,7 @@ impl Executor {
             .map(|(ent, res)| (ent, res.unwrap()))
             .map(|(ent, s)| (ent, path::Path::new(&s).to_owned()))
             .collect();
-        mapped.sort_by(|(a,_),(b, _)| a.cmp(b));
+        mapped.sort_by(|(a, _), (b, _)| a.cmp(b));
 
         let mut missing_dirs: Vec<path::PathBuf> = mapped
             .iter()
@@ -50,7 +50,7 @@ impl Executor {
             .filter(|p| !p.exists())
             .map(|p| path::PathBuf::from(p))
             .collect();
-        missing_dirs.sort_by(|a,b| a.cmp(b));
+        missing_dirs.sort_by(|a, b| a.cmp(b));
 
         return ExecutionPlan {
             dirs_to_create: missing_dirs,
@@ -58,10 +58,10 @@ impl Executor {
         };
     }
     pub fn validate(&self, plan: &ExecutionPlan) -> Result<bool, String> {
-        let sources:Vec<&PathBuf> = plan.moves.iter().map(|(x,_)|x).unique().collect();
-        let targets:Vec<&PathBuf>= plan.moves.iter().map(|(_,x)|x).unique().collect();
+        let sources: Vec<&PathBuf> = plan.moves.iter().map(|(x, _)| x).unique().collect();
+        let targets: Vec<&PathBuf> = plan.moves.iter().map(|(_, x)| x).unique().collect();
         if targets.iter().find(|t| t.to_str().unwrap() == "").is_some() {
-            return Err("Found an empty target.".to_string())
+            return Err("Found an empty target.".to_string());
         }
 
         if sources.len() == targets.len() {
@@ -101,6 +101,7 @@ impl Executor {
                     {
                         let _ = fs::rename(&from, &to);
                     } else {
+                        // log
                         println!("Skipped {:?}.", to)
                     }
                 } else {
@@ -108,6 +109,7 @@ impl Executor {
                 }
             })
         } else {
+            // log
             println!("Aborted without doing anything.")
         }
     }

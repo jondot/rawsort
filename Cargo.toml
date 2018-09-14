@@ -4,6 +4,7 @@
 name = "rawsort"
 version = "0.1.0"
 authors = ["Dotan Nahum <jondotan@gmail.com>"]
+publish = false
 
 
 [dependencies]
@@ -14,6 +15,9 @@ itertools = "0.7.3"
 dialoguer = "0.1.0"
 kamadak-exif = "*"
 notify = "4.0.0"
+slog = "2.3.3"
+slog-term = "2.4.0"
+slog-json = "2.2.0"
 
 
 
