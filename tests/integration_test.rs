@@ -158,13 +158,12 @@ fn it_plans_properly() {
     );
 }
 
-/*
-#![feature(test)]
-#[bench]
-use test::Bencher;
-extern crate test;
-
+#[cfg(nightly)]
 fn bench_make_plan(b: &mut Bencher) {
+    #![feature(test)]
+    #[bench]
+    use test::Bencher;
+    extern crate test;
     b.iter(|| {
         make_plan(
             "multiple",
@@ -172,4 +171,3 @@ fn bench_make_plan(b: &mut Bencher) {
         )
     });
 }
-*/
