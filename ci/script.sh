@@ -12,6 +12,7 @@ main() {
 
     cross test --target $TARGET
     cross test --target $TARGET --release
+    cargo bench
 
 }
 
