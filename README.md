@@ -1,3 +1,5 @@
+![](media/rawsort.png)
+
 # Rawsort
 
 A simple but powerful RAW photo import tool built to have amazing performance and integrate with photography workflows.
@@ -6,6 +8,15 @@ Having this as the import tool in my workflow meant I no longer needed to pay fo
 
 
 ## Quick Start
+
+Get it with Homebrew:
+
+```
+$ brew tap jondot/tap
+$ brew install rawsort
+$ rawsort --help
+```
+
 
 Rawsort is primarily a command line tool (but it was built to integrate with GUI tools). Here are some workflow ideas.
 
