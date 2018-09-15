@@ -1,12 +1,9 @@
-#![feature(test)]
 extern crate rawsort;
-extern crate test;
 use chrono::prelude::*;
 extern crate chrono;
 use rawsort::executor::{ExecutionPlan, Executor};
 use rawsort::registry::Registry;
 use std::path::{Path, PathBuf};
-use test::Bencher;
 
 fn build_registry() -> Registry {
     let mut reg = Registry::new();
@@ -161,7 +158,12 @@ fn it_plans_properly() {
     );
 }
 
+/*
+#![feature(test)]
 #[bench]
+use test::Bencher;
+extern crate test;
+
 fn bench_make_plan(b: &mut Bencher) {
     b.iter(|| {
         make_plan(
@@ -170,3 +172,4 @@ fn bench_make_plan(b: &mut Bencher) {
         )
     });
 }
+*/
