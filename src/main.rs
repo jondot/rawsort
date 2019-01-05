@@ -13,6 +13,7 @@ use slog::Drain;
 use std::sync::Mutex;
 
 use chrono::prelude::*;
+
 use itertools::Itertools;
 extern crate chrono;
 use clap::{App, Arg};
@@ -100,45 +101,54 @@ fn main() {
                         .iter()
                         .map(|(k, d)| format!("\t{}\t{}\n", k, d))
                         .join("")
-                )).takes_value(true),
-        ).arg(
+                ))
+                .takes_value(true),
+        )
+        .arg(
             Arg::with_name("INPUT")
                 .help("Sets the input folder to use.")
                 .required(true)
                 .index(1),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("force")
                 .short("f")
                 .long("force")
                 .help("Force file overwrites."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("dryrun")
                 .short("d")
                 .long("dryrun")
                 .help("Dry run (shows a report of whats going to happen)."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("json")
                 .short("")
                 .long("json")
                 .help("Log using JSON (for integration with other tools)."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("watch")
                 .short("w")
                 .long("watch")
                 .value_name("WATCH_DIR")
                 .takes_value(true)
                 .help("Watch input directory and run if files are added."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("yes")
                 .short("y")
                 .long("yes")
                 .help("Answer automatice 'yes' to all prompts."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("v")
                 .short("v")
                 .multiple(true)
                 .help("Sets the level of verbosity."),
-        ).get_matches();
+        )
+        .get_matches();
 
     let fmt = matches
         .value_of("out")
@@ -164,7 +174,6 @@ fn main() {
     } else {
         console
     };
-    info!(log, "testing 123");
 
     let run = || {
         let plan = exec.plan(input.to_string(), fmt.to_string());
