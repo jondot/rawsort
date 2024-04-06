@@ -1,9 +1,9 @@
-use exif;
+use crate::exif::Exif;
 use std::collections::HashMap;
 use walkdir::DirEntry;
 
 pub struct Registry {
-    map: HashMap<String, (String, Box<Fn(&exif::Exif, &DirEntry) -> String>)>,
+    map: HashMap<String, (String, Box<dyn Fn(&Exif, &DirEntry) -> String>)>,
 }
 
 impl Registry {
@@ -14,7 +14,7 @@ impl Registry {
     }
     pub fn add<T>(&mut self, name: String, desc: String, func: T)
     where
-        T: Fn(&exif::Exif, &DirEntry) -> String + 'static,
+        T: Fn(&Exif, &DirEntry) -> String + 'static,
     {
         self.map.insert(name, (desc, Box::new(func)));
     }
@@ -30,7 +30,7 @@ impl Registry {
     }
     pub fn format(&self, fmt: &str, ent: &DirEntry) -> Result<String, String> {
         let path = ent.path();
-        let exif = exif::Exif::from_path(&path);
+        let exif = Exif::from_path(&path);
         let fmtstring = fmt.to_string();
         exif.map(|exif_ok| {
             self.map.keys().fold(fmtstring, |acc, k| {

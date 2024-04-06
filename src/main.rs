@@ -1,22 +1,11 @@
-extern crate clap;
-extern crate dialoguer;
-extern crate itertools;
-extern crate notify;
-extern crate rawsort;
-extern crate walkdir;
+use slog::{error, info, o, Drain, Fuse, Logger};
 
-#[macro_use]
-extern crate slog;
-extern crate slog_json;
-extern crate slog_term;
-use slog::Drain;
 use std::sync::Mutex;
 
 use chrono::prelude::*;
 
-use itertools::Itertools;
-extern crate chrono;
 use clap::{App, Arg};
+use itertools::Itertools;
 use notify::{DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
 use std::sync::mpsc::channel;
@@ -221,11 +210,11 @@ where
 
     // Automatically select the best implementation for your platform.
     // You can also access each implementation directly e.g. INotifyWatcher.
-    let mut watcher: RecommendedWatcher = try!(Watcher::new(tx, Duration::from_secs(2)));
+    let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(2))?;
 
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
-    try!(watcher.watch(path, RecursiveMode::NonRecursive));
+    watcher.watch(path, RecursiveMode::NonRecursive)?;
 
     // This is a simple loop, but you may want to use more complex logic here,
     // for example to handle I/O.

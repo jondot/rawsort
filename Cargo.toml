@@ -4,6 +4,7 @@
 name = "rawsort"
 version = "0.4.1-alpha.0"
 authors = ["Dotan Nahum <jondotan@gmail.com>"]
+edition = "2021"
 publish = false
 
 
@@ -13,11 +14,8 @@ chrono = "0.4"
 clap = "2"
 itertools = "0.7.3"
 dialoguer = "0.1.0"
-kamadak-exif = "*"
+kamadak-exif = "0.3.1"
 notify = "4.0.0"
-slog = "2.3.3"
+slog = { version = "2.7.0" }
 slog-term = "2.4.0"
 slog-json = "2.2.0"
-
-
-

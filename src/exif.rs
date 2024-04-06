@@ -1,6 +1,6 @@
 use chrono::prelude::*;
+use exif::{Reader, Tag};
 
-use ext_exif::{Reader, Tag};
 use std::fs::File;
 use std::io::BufReader;
 use std::path;

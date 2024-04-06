@@ -1,6 +1,6 @@
+use crate::registry;
 use dialoguer::Confirmation;
 use itertools::Itertools;
-use registry;
 use std::fs;
 use std::path;
 use std::path::PathBuf;
